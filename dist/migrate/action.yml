@@ -1,0 +1,16 @@
+name: 'local markdown file image migrate'
+description: ''
+inputs:
+  input:  # id of input
+    description: '文件路径，支持 glob，例如 tmp/*.md'
+    default: "tmp/*.md"
+    required: false
+  output:
+    default: "./source/notion_images/"
+    required: false
+  base_img_url:
+    default: "/notion_images/"
+    required: false
+runs:
+  using: 'node16'
+  main: 'index.js'

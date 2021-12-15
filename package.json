@@ -1,0 +1,30 @@
+{
+  "name": "notion-blog-action",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:migrate": "ncc build migrate/index.js -o dist/migrate/",
+    "build:notion": "ncc build notion/index.js -o dist/notion/",
+    "build": "npm run build:migrate && npm run build:notion"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^1.6.0",
+    "@actions/exec": "^1.1.0",
+    "@actions/github": "^5.0.0",
+    "@notionhq/client": "^0.4.9",
+    "adm-zip": "^0.5.9",
+    "axios": "^0.24.0",
+    "md5-file": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.12",
+    "dayjs": "^1.10.7",
+    "glob": "^7.2.0",
+    "twemoji": "^13.1.0",
+    "yaml": "^2.0.0-9"
+  }
+}
