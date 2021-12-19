@@ -12238,7 +12238,15 @@ class notion {
   frontMatter(page, title) {
     page = page.replace(`# ${title}`, "").trim();
 
-    let keys = ["categories", "date", "excerpt", "status", "tags", "urlname"];
+    let keys = [
+      "categories",
+      "date",
+      "excerpt",
+      "status",
+      "tags",
+      "urlname",
+      "show_category",
+    ];
     let pattern = `(${keys.join("|")}):\\s(.*)\n`;
     let re = new RegExp(pattern, "igm");
 
