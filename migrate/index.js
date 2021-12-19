@@ -5608,6 +5608,8 @@ class migrate {
   }
 
   copy(filepath, img) {
+    img = img.replace(/^'/, "").replace(/'$/, "");
+    img = img.replace(/^"/, "").replace(/"$/, "");
     let imgPath = join(dirname(filepath), img);
     imgPath = decodeURIComponent(imgPath);
     let hash = md5File.sync(imgPath);

@@ -12260,8 +12260,9 @@ class notion {
       }
     }
     data.title = title;
-    let fm = YAML.stringify(data);
-
+    console.log(data);
+    let fm = YAML.stringify(data, { doubleQuotedAsJSON: true });
+    console.log(fm);
     page = page.replace(re, "");
     page = `---\n${fm}---\n\n${page}`;
     return page;
