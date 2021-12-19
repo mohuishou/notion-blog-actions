@@ -3597,49 +3597,49 @@ if (typeof Object.create === 'function') {
 /***/ 928:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const crypto = __nccwpck_require__(113)
-const fs = __nccwpck_require__(147)
+const crypto = __nccwpck_require__(113);
+const fs = __nccwpck_require__(147);
 
-const BUFFER_SIZE = 8192
+const BUFFER_SIZE = 8192;
 
-function md5FileSync (path) {
-  const fd = fs.openSync(path, 'r')
-  const hash = crypto.createHash('md5')
-  const buffer = Buffer.alloc(BUFFER_SIZE)
+function md5FileSync(path) {
+  const fd = fs.openSync(path, "r");
+  const hash = crypto.createHash("md5");
+  const buffer = Buffer.alloc(BUFFER_SIZE);
 
   try {
-    let bytesRead
+    let bytesRead;
 
     do {
-      bytesRead = fs.readSync(fd, buffer, 0, BUFFER_SIZE)
-      hash.update(buffer.slice(0, bytesRead))
-    } while (bytesRead === BUFFER_SIZE)
+      bytesRead = fs.readSync(fd, buffer, 0, BUFFER_SIZE);
+      hash.update(buffer.slice(0, bytesRead));
+    } while (bytesRead === BUFFER_SIZE);
   } finally {
-    fs.closeSync(fd)
+    fs.closeSync(fd);
   }
 
-  return hash.digest('hex')
+  return hash.digest("hex");
 }
 
-function md5File (path) {
+function md5File(path) {
   return new Promise((resolve, reject) => {
-    const output = crypto.createHash('md5')
-    const input = fs.createReadStream(path)
+    const output = crypto.createHash("md5");
+    const input = fs.createReadStream(path);
 
-    input.on('error', (err) => {
-      reject(err)
-    })
+    input.on("error", (err) => {
+      reject(err);
+    });
 
-    output.once('readable', () => {
-      resolve(output.read().toString('hex'))
-    })
+    output.once("readable", () => {
+      resolve(output.read().toString("hex"));
+    });
 
-    input.pipe(output)
-  })
+    input.pipe(output);
+  });
 }
 
-module.exports = md5File
-module.exports.sync = md5FileSync
+module.exports = md5File;
+module.exports.sync = md5FileSync;
 
 
 /***/ }),
@@ -5582,12 +5582,12 @@ class migrate {
     console.log(`迁移文件图片: ${filepath}`);
     let md = readFileSync(filepath).toString();
     // 获取所有的图片
-    let matchs = md.matchAll(/!\[(.*?)\]\((.*?)\)/gi);
+    let matchs = md.matchAll(/!\[(.*?)\]\((.*)\)/gi);
     for (const m of matchs) {
-      let name = basename(decodeURIComponent(m[2]));
+      let name = m[1];
       if (name.includes("Untitled")) name = "";
       let filename = this.copy(filepath, m[2]);
-      md = md.replace(m[0], `[${name}](${join(this.baseImgURL, filename)})`);
+      md = md.replace(m[0], `![${name}](${join(this.baseImgURL, filename)})`);
     }
     md = this.migrateFrontMatterImage(filepath, md);
     md = this.format(md);
@@ -5613,6 +5613,7 @@ class migrate {
     let hash = md5File.sync(imgPath);
     let filename = hash + extname(imgPath);
     let newPath = join(this.output, filename);
+    console.log(`迁移: ${imgPath} --> ${newPath}`);
     copyFileSync(imgPath, newPath);
     return filename;
   }

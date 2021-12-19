@@ -12112,7 +12112,7 @@ module.exports.implForWrapper = function (wrapper) {
 
 /***/ }),
 
-/***/ 8442:
+/***/ 9184:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const { Client } = __nccwpck_require__(4882);
@@ -20428,7 +20428,7 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(5127);
 
 try {
-  const notion = __nccwpck_require__(8442);
+  const notion = __nccwpck_require__(9184);
   let client = new notion({
     token: core.getInput("token"),
     token_v2: core.getInput("token_v2"),

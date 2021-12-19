@@ -7,7 +7,7 @@
 
 ## 说明
 
-database template: TBD
+database template: https://mohuishou.notion.site/3999b0ae72364a4b99a87f7d9d0a52be?v=1df90fd8110541679dc48866b80031ee
 
 ### notion
 
@@ -32,7 +32,7 @@ jobs:
       with:
         submodules: false
 
-    - uses: mohuishou/notion-blog-actions/notion@v1
+    - uses: mohuishou/notion-blog-actions/notion@main
       with:
         token: ${{ secrets.NOTION_TOKEN }}
         token_v2: ${{ secrets.NOTION_TOKEN_V2 }}
@@ -41,7 +41,7 @@ jobs:
         output: "./tmp/"
 
     - name: "migrate image"
-      uses: mohuishou/notion-blog-actions/migrate@v1
+      uses: mohuishou/notion-blog-actions/migrate@main
       with:
         input: "./tmp/*.md"
 
