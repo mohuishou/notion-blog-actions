@@ -129,6 +129,7 @@ class notion {
       "tags",
       "urlname",
       "show_category",
+      "index_img",
     ];
     let pattern = `(${keys.join("|")}):\\s(.*)\n`;
     let re = new RegExp(pattern, "igm");
