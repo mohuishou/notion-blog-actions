@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:migrate": "ncc build migrate/index.js -o dist/migrate/",
-    "build:notion": "ncc build notion/index.js -o dist/notion/",
+    "build:migrate": "ncc build src/migrate/index.js -o migrate/",
+    "build:notion": "ncc build src/notion/index.js -o notion/",
     "build": "npm run build:migrate && npm run build:notion"
   },
   "author": "",

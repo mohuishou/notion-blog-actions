@@ -27,7 +27,7 @@ class migrate {
     console.log(`迁移文件图片: ${filepath}`);
     let md = readFileSync(filepath).toString();
     // 获取所有的图片
-    let matchs = md.matchAll(/\[(.*?)\]\((.*?)\)/gi);
+    let matchs = md.matchAll(/!\[(.*?)\]\((.*?)\)/gi);
     for (const m of matchs) {
       let name = basename(decodeURIComponent(m[2]));
       if (name.includes("Untitled")) name = "";
