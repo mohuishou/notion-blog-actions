@@ -137,16 +137,24 @@ class notion {
     let data = {};
     let matchs = page.matchAll(re);
     for (const m of matchs) {
-      data[m[1]] = m[2];
-      if (m[1] == "categories" || m[1] == "tags") {
-        data[m[1]] = m[2].split(",").map((item) => item.trim());
+      let key = m[1];
+      let val = m[2];
+      if (key in data) {
+        console.log(
+          `${key} is exist in data, will skip, current: ${data[key]}, new: ${val}`
+        );
+        continue;
       }
+
+      data[key] = val;
+      if (key == "categories" || key == "tags") {
+        data[key] = val.split(",").map((item) => item.trim());
+      }
+      page = page.replace(m[0], "");
     }
+
     data.title = title;
-    console.log(data);
     let fm = YAML.stringify(data, { doubleQuotedAsJSON: true });
-    console.log(fm);
-    page = page.replace(re, "");
     page = `---\n${fm}---\n\n${page}`;
     return page;
   }
