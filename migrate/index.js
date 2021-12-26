@@ -5584,6 +5584,10 @@ class migrate {
     // 获取所有的图片
     let matchs = md.matchAll(/!\[(.*?)\]\((.*)\)/gi);
     for (const m of matchs) {
+      if (m[2].includes("http")) {
+        console.log(`${m[2]} is http image, skiped`);
+        continue;
+      }
       let name = m[1];
       if (name.includes("Untitled")) name = "";
       let filename = this.copy(filepath, m[2]);
