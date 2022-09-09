@@ -32,15 +32,20 @@ class notion {
     for (let i = 0; i < pages.length; i++) {
       const page = pages[i];
       let title = page.properties.title.title[0].plain_text;
-
       console.log(`正在尝试下载第 ${i + 1} 篇文章: ${title}`);
+
+      let props = {};
+      for (const key in page.properties) {
+        props[key] = getVal(page.properties[key], page, title);
+      }
 
       let id = await this.addTask(page.id);
       let url = await this.syncTask(id);
 
-      await this.download(url, title);
+      await this.download(url, title, props);
       await this.updateProps(page);
     }
+    return pages.length;
   }
 
   async pages() {
@@ -98,7 +103,7 @@ class notion {
     }
   }
 
-  async download(url, title) {
+  async download(url, title, props) {
     // 下载压缩包
     let resp = await this.http.get(url, {
       responseType: "stream",
@@ -107,7 +112,7 @@ class notion {
     let zip = new AdmZip(buf);
     zip.getEntries().forEach((entry) => {
       if (!entry.entryName.includes(".md")) return;
-      let page = this.frontMatter(entry.getData().toString(), title);
+      let page = this.frontMatter(entry.getData().toString(), props);
       entry.setData(page);
       entry.entryName = title + ".md";
     });
@@ -118,43 +123,10 @@ class notion {
    *
    * @param {string} page
    */
-  frontMatter(page, title) {
-    page = page.replace(`# ${title}`, "").trim();
-
-    let keys = [
-      "categories",
-      "date",
-      "excerpt",
-      "status",
-      "tags",
-      "urlname",
-      "show_category",
-      "index_img",
-    ];
-    let pattern = `(${keys.join("|")}):\\s(.*)\n`;
-    let re = new RegExp(pattern, "igm");
-
-    let data = {};
-    let matchs = page.matchAll(re);
-    for (const m of matchs) {
-      let key = m[1];
-      let val = m[2];
-      if (key in data) {
-        console.log(
-          `${key} is exist in data, will skip, current: ${data[key]}, new: ${val}`
-        );
-        continue;
-      }
-
-      data[key] = val;
-      if (key == "categories" || key == "tags") {
-        data[key] = val.split(",").map((item) => item.trim());
-      }
-      page = page.replace(m[0], "");
-    }
-
-    data.title = title;
-    let fm = YAML.stringify(data, { doubleQuotedAsJSON: true });
+  frontMatter(page, props) {
+    page = page.replace(`# ${props.title}`, "").trim();
+    page = page.replace(/(.*?):\s(.*)\n/gim, "");
+    let fm = YAML.stringify(props, { doubleQuotedAsJSON: true });
     page = `---\n${fm}---\n\n${page}`;
     return page;
   }
@@ -195,3 +167,27 @@ async function streamToBuffer(stream) {
   });
 }
 module.exports = notion;
+
+function getVal(data, page, title) {
+  let val = data[data.type];
+  switch (data.type) {
+    case "multi_select":
+      return val.map((a) => a.name);
+    case "select":
+      return val.name;
+    case "date":
+      return val.start;
+    case "rich_text":
+    case "title":
+      return val.map((a) => a.plain_text).join("");
+    case "text":
+      return data.plain_text;
+    case "files":
+      if (val.length < 1) return "";
+      return encodeURIComponent(
+        `${title}${page.id.replace("-", "")}/${val[0].name}`
+      );
+    default:
+      return val;
+  }
+}

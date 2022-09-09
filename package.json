@@ -18,7 +18,8 @@
     "@notionhq/client": "^0.4.9",
     "adm-zip": "^0.5.9",
     "axios": "^0.24.0",
-    "md5-file": "^5.0.0"
+    "md5-file": "^5.0.0",
+    "notion-to-md": "^2.5.5"
   },
   "devDependencies": {
     "@types/node": "^16.11.12",
