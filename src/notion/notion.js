@@ -2,6 +2,7 @@ const { Client } = require("@notionhq/client");
 const { default: axios } = require("axios");
 const AdmZip = require("adm-zip");
 const YAML = require("yaml");
+const { join, basename } = require("path");
 
 class notion {
   client;
@@ -36,13 +37,13 @@ class notion {
 
       let props = {};
       for (const key in page.properties) {
-        props[key] = getVal(page.properties[key], page, title);
+        props[key] = getVal(page.properties[key]);
       }
 
       let id = await this.addTask(page.id);
       let url = await this.syncTask(id);
 
-      await this.download(url, title, props);
+      await this.download(url, props);
       await this.updateProps(page);
     }
     return pages.length;
@@ -86,6 +87,7 @@ class notion {
 
   async syncTask(id) {
     for (let i = 1; i <= 20; i++) {
+      await sleep(2000);
       console.log(`第 ${i} 次尝试获取导出任务 ${id} 数据`);
       let url = "https://www.notion.so/api/v3/getTasks";
       let resp = await this.http.post(url, { taskIds: [id] });
@@ -99,11 +101,10 @@ class notion {
       ) {
         return status.exportURL;
       }
-      await sleep(2000);
     }
   }
 
-  async download(url, title, props) {
+  async download(url, props) {
     // 下载压缩包
     let resp = await this.http.get(url, {
       responseType: "stream",
@@ -112,9 +113,17 @@ class notion {
     let zip = new AdmZip(buf);
     zip.getEntries().forEach((entry) => {
       if (!entry.entryName.includes(".md")) return;
+      // 属性内如果存在文件，需要重新构造路径
+      props.index_img = join(
+        encodeURIComponent(entry.entryName.replace(".md", "")),
+        props.index_img
+      );
       let page = this.frontMatter(entry.getData().toString(), props);
+
       entry.setData(page);
-      entry.entryName = title + ".md";
+      entry.entryName = props.urlname;
+      if (!entry.entryName) entry.entryName = props.title;
+      entry.entryName += ".md";
     });
     zip.extractAllTo(this.output, true);
   }
@@ -168,7 +177,7 @@ async function streamToBuffer(stream) {
 }
 module.exports = notion;
 
-function getVal(data, page, title) {
+function getVal(data) {
   let val = data[data.type];
   switch (data.type) {
     case "multi_select":
@@ -184,9 +193,7 @@ function getVal(data, page, title) {
       return data.plain_text;
     case "files":
       if (val.length < 1) return "";
-      return encodeURIComponent(
-        `${title}${page.id.replace("-", "")}/${val[0].name}`
-      );
+      return val[0].name;
     default:
       return val;
   }
