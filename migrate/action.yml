@@ -11,6 +11,17 @@ inputs:
   base_img_url:
     default: "/notion_images/"
     required: false
+  aliyun:
+    default: |
+      {
+        "accessKeyId": "",
+        "accessKeySecret": "",
+        "bucket": "",
+        "area": "oss-cn-hangzhou",
+        "path": "image/",
+        "customUrl": "",
+        "options": ""
+      }
 runs:
   using: 'node16'
   main: 'index.js'

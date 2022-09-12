@@ -4,16 +4,39 @@ const { dirname, join, extname, basename } = require("path");
 const md5File = require("md5-file");
 const { parse } = require("twemoji");
 const crypto = require("crypto");
+const { PicGo } = require("picgo");
 
 class migrate {
   /**
    * 文件
    * @param {string} pattern
    */
-  constructor({ pattern, output, baseImgURL }) {
+  constructor({ pattern, output, baseImgURL, aliyun }) {
     this.pattern = pattern;
     this.output = output;
     this.baseImgURL = baseImgURL;
+    if (aliyun) {
+      this.picgo = new PicGo();
+      this.picgo.setConfig({
+        picBed: {
+          uploader: "aliyun",
+          current: "aliyun",
+          transformer: "path",
+          aliyun: aliyun,
+        },
+      });
+    }
+
+    // aliyun config exp
+    // {
+    //   accessKeyId: "",
+    //   accessKeySecret: "",
+    //   bucket: "",
+    //   area: "oss-cn-hangzhou",
+    //   path: "image/",
+    //   customUrl: "",
+    //   options: "",
+    // }
   }
 
   run() {
@@ -24,7 +47,7 @@ class migrate {
     }
   }
 
-  migrate(filepath) {
+  async migrate(filepath) {
     console.log(`file images will be migrate: ${filepath}`);
     let md = readFileSync(filepath).toString();
 
@@ -38,7 +61,8 @@ class migrate {
       let name = m[1];
       if (name.includes("Untitled")) name = "";
       let filename = this.copy(filepath, m[2]);
-      md = md.replace(m[0], `![${name}](${join(this.baseImgURL, filename)})`);
+
+      md = md.replace(m[0], `![${name}](${await this.upload(filename)})`);
     }
 
     // 获取所有 <img> 标签的图片
@@ -46,21 +70,24 @@ class migrate {
     for (const m of matchs) {
       // 目前只实现了 svg base64 的图片
       if (m[1].includes("data:image/svg+xml")) {
-        let data = m[1].replace("data:image/svg+xml;utf8,", "");
-        let filename =
-          crypto.createHash("md5").update(m[1]).digest("hex") + ".svg";
-        writeFileSync(join(this.output, filename), decodeURIComponent(data));
-        md = md.replace(
-          m[0],
-          `<img src="${join(this.baseImgURL, filename)}" width="${m[2]}">`
-        );
-        console.log("迁移 img: " + filepath);
+        let url = await this.upload(this.base64ToFile(m[1]));
+        md = md.replace(m[0], `<img src="${url}" width="${m[2]}">`);
+        console.log("migrate <img>: " + url);
       }
     }
 
     md = this.migrateFrontMatterImage(filepath, md);
     md = this.format(md);
     writeFileSync(filepath, md);
+  }
+
+  async upload(filename) {
+    let url = join(this.baseImgURL, filename);
+    if (this.picgo) {
+      let res = await this.picgo.upload([join(this.output, filename)]);
+      if (res.length > 0) url = res[0].imgUrl;
+    }
+    return url;
   }
 
   /**
@@ -87,6 +114,16 @@ class migrate {
     console.log(`migrate: ${imgPath} --> ${newPath}`);
     copyFileSync(imgPath, newPath);
     return filename;
+  }
+
+  base64ToFile(src) {
+    if (src.includes("data:image/svg+xml")) {
+      let data = src.replace("data:image/svg+xml;utf8,", "");
+      let filename =
+        crypto.createHash("md5").update(src).digest("hex") + ".svg";
+      writeFileSync(join(this.output, filename), decodeURIComponent(data));
+      return filename;
+    }
   }
 
   /**
