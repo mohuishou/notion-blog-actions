@@ -63,8 +63,8 @@ async function sync() {
 
     console.log(`[${i + 1}]: ${page.properties.title.title[0].plain_text}`);
     let file = await download(page);
-    await migrateImages(file);
-    published(page);
+    // await migrateImages(file);
+    // published(page);
   }
   if (pages.length == 0)
     console.log(`no pages ${config.status.name}: ${config.status.unpublish}`);
