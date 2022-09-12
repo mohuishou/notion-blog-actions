@@ -1,4 +1,4 @@
-name: 'notion blog'
+name: 'notion-blog-action'
 description: |
   将 notion database 中的 page 转换为 markdown 文档，可以用于 hexo、hugo 等静态博客构建
   支持自动将图片迁移到 aliyun oss
