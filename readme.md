@@ -15,6 +15,7 @@ database template: https://mohuishou.notion.site/3999b0ae72364a4b99a87f7d9d0a52b
 
 ### migrate
 
+使用 notion-to-md 导出 markdown 文件，并且支持了 `callout`，以及 front matter
 迁移导出 md 文件中的图片资源到指定文件夹，支持属性字段含有图片的情况
 
 ## 使用示例
@@ -32,23 +33,16 @@ jobs:
       with:
         submodules: false
 
-    - uses: mohuishou/notion-blog-actions/notion@main
+    - uses: mohuishou/notion-blog-actions@main
       with:
-        token: ${{ secrets.NOTION_TOKEN }}
-        token_v2: ${{ secrets.NOTION_TOKEN_V2 }}
-        space_id: "输入你的空间 id"
-        database_id: "输入你的 database id"
-        output: "./tmp/"
-
-    - name: "migrate image"
-      uses: mohuishou/notion-blog-actions/migrate@main
-      with:
-        input: "./tmp/*.md"
-
-    - name: "cp md files"
-      run: |
-        cp -f tmp/*.md source/_posts/notion/
-        rm -rf tmp
+        notion_secret: ${{ secrets.NOTION_TOKEN }}
+        database_id: "xxx"
+        output: "./source/_posts/notion/"
+        access_key_id: "${{ secrets.ALI_ID }}"
+        access_key_secret: "${{ secrets.ALI_SECRET }}"
+        bucket: "xxx"
+        area: "${{ inputs.oss_endpoint }}"
+        prefix: "image/"
 
     - name: git setting
       run: |
