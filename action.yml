@@ -1,0 +1,39 @@
+name: 'notion blog'
+description: |
+  将 notion database 中的 page 转换为 markdown 文档，可以用于 hexo、hugo 等静态博客构建
+  支持自动将图片迁移到 aliyun oss
+inputs:
+  token:  # id of input
+    description: 'notion api token'
+    required: true
+  database_id:
+    required: true
+  status_name:
+    description: 'notion page prop status name'
+    default: "status"
+  status_published:
+    description: 'notion page prop published status value'
+    default: "已发布"
+  status_unpublish:
+    description: 'notion page prop unpublish status value'
+    default: "待发布"
+  access_key_id:
+    description: aliyun access_key_id
+    required: true
+  access_key_secret:
+    description: aliyun access_key_secret
+    required: true
+  bucket:
+    description: aliyun bucket
+    required: true
+  area:
+    description: "aliyun area: oss-cn-hangzhou"
+    required: true
+    default: oss-cn-hangzhou
+  prefix:
+    description: "file dir, e.g. image/"
+  output:
+    required: false
+runs:
+  using: 'node16'
+  main: 'index.js'

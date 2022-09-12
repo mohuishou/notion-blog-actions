@@ -5,3 +5,4 @@ tmp*
 notion_test.js
 migrate_test.js
 test.js
+dist

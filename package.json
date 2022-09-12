@@ -4,10 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build:migrate": "ncc build src/migrate/index.js -o migrate/",
-    "build:notion": "ncc build src/notion/index.js -o notion/",
-    "build": "npm run build:migrate && npm run build:notion"
+    "test": "node test.js",
+    "build": "ncc build src/index.js -o dist/"
   },
   "author": "",
   "license": "ISC",
@@ -18,14 +16,16 @@
     "@notionhq/client": "^0.4.9",
     "adm-zip": "^0.5.9",
     "axios": "^0.24.0",
-    "md5-file": "^5.0.0",
-    "notion-to-md": "^2.5.5"
+    "md5-file": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^16.11.12",
     "dayjs": "^1.10.7",
     "glob": "^7.2.0",
-    "picgo": "^1.5.0-alpha.0",
+    "notion-to-md": "^2.5.5",
+    "picgo": "^1.5.0-alpha.9",
+    "picgo-plugin-pic-migrater": "^1.3.0",
+    "picgo-plugin-rename-file": "^1.0.4",
     "twemoji": "^13.1.0",
     "yaml": "^2.0.0-9"
   }
