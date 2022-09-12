@@ -8,6 +8,7 @@ const { PicGo } = require("picgo");
 const crypto = require("crypto");
 const { extname, join } = require("path");
 const Migrater = require("./migrate");
+const { format } = require("prettier");
 
 let config = {
   notion_secret: "",
@@ -63,8 +64,8 @@ async function sync() {
 
     console.log(`[${i + 1}]: ${page.properties.title.title[0].plain_text}`);
     let file = await download(page);
-    // await migrateImages(file);
-    // published(page);
+    await migrateImages(file);
+    published(page);
   }
   if (pages.length == 0)
     console.log(`no pages ${config.status.name}: ${config.status.unpublish}`);
@@ -115,6 +116,8 @@ async function download(page) {
   let filename = properties.title;
   if (properties.urlname) filename = properties.urlname;
   let filepath = join(config.output, filename + ".md");
+
+  md = format(md, { parser: "markdown" });
   writeFileSync(filepath, md);
   return filepath;
 }

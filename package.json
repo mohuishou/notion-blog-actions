@@ -26,6 +26,7 @@
     "picgo": "^1.5.0-alpha.9",
     "picgo-plugin-pic-migrater": "^1.3.0",
     "picgo-plugin-rename-file": "^1.0.4",
+    "prettier": "^2.7.1",
     "twemoji": "^13.1.0",
     "yaml": "^2.0.0-9"
   }
