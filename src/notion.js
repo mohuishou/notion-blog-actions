@@ -13,6 +13,7 @@ const { format } = require("prettier");
 let config = {
   notion_secret: "",
   database_id: "",
+  migrate_image: true,
   aliyun: {
     accessKeyId: "",
     accessKeySecret: "",
@@ -64,7 +65,7 @@ async function sync() {
 
     console.log(`[${i + 1}]: ${page.properties.title.title[0].plain_text}`);
     let file = await download(page);
-    await migrateImages(file);
+    if(config.migrate_image) await migrateImages(file);
     published(page);
   }
   if (pages.length == 0)
